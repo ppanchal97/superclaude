@@ -1,0 +1,88 @@
+# superclaude
+
+A bookmarklet that visualizes the branch tree of a [Claude.ai](https://claude.ai) conversation and lets you jump to any leaf in one click.
+
+Claude conversations are trees. Every time you edit a message or ask Claude to retry, a new branch is created, but Claude's UI only shows one path at a time. Finding the latest reply across all branches, or returning to a branch you tried two days ago, means clicking through `< 2/3 >` indicators at every fork. `superclaude` shows the whole tree on a canvas, lets you click any node to preview it, and switches the conversation to that branch in one click.
+
+## Install
+
+1. Open the [install page](https://ppanchal97.github.io/superclaude/) *(pending GitHub Pages activation)*.
+2. Drag the **superclaude** button onto your bookmarks bar.
+
+If Chrome strips the `javascript:` scheme during drag (it sometimes does on recent versions), the install page has a manual fallback: copy the URL it shows you and paste it into the URL field of a new bookmark you create by hand.
+
+## Use
+
+1. Open any chat at `claude.ai/chat/<id>`.
+2. Click the **superclaude** bookmark.
+3. Click any node in the tree to preview its message. Click **Jump to this branch** to switch the displayed conversation to that node's branch, or **Jump to latest** to go to the most recent message across all branches.
+
+Shortcuts:
+- `Esc` — close the modal
+- `Cmd/Ctrl` + scroll — zoom the canvas
+- plain scroll — pan
+
+The canvas auto-centers on the current leaf when the modal opens, so you don't have to hunt for "you are here" in a deep tree.
+
+## What it does — and what it doesn't
+
+- Runs only on `claude.ai/chat/<id>` pages. Refuses to run anywhere else.
+- Uses your existing Claude.ai cookies to call Claude.ai's own private API. **No third-party servers, no telemetry, no analytics.**
+- Reads the conversation tree. Writes exactly one field (`current_leaf_message_uuid`) when you jump branches.
+- Wipes the locally-cached entry for that one conversation in IndexedDB before reloading, so Claude's React tree rehydrates with the new branch. This affects only the conversation you're viewing.
+- Doesn't send messages, doesn't retry completions, doesn't read other conversations, doesn't change account settings.
+
+## Browser support
+
+| Browser | Status |
+| --- | --- |
+| Chrome | tested end-to-end |
+| Edge | should work — same engine as Chrome |
+| Firefox | untested |
+| Safari | untested |
+| Arc | **does not work** — Arc blocks `javascript:` URLs at the scheme level, so no bookmarklet of any size runs |
+
+## Audit before installing
+
+The install URL in `dist/bookmarklet.url` is produced from `bookmarklet.js` by `build.js`, using terser at the version pinned in `package-lock.json`. To verify the committed URL matches a fresh build from source:
+
+```sh
+git clone https://github.com/ppanchal97/superclaude.git
+cd superclaude
+git show HEAD:dist/bookmarklet.url > /tmp/expected.url
+npm install
+npm run build
+diff /tmp/expected.url dist/bookmarklet.url
+```
+
+A clean `diff` means the URL you install is exactly the output of the source you can read.
+
+## Build from source
+
+```sh
+npm install
+npm run build
+```
+
+Outputs:
+- `dist/bookmarklet.url` — the install URL, one line
+- `dist/install.html` — a standalone install page
+
+The build fails if the encoded URL exceeds 60 KB. Chrome's bookmarklet ceiling is reported around 64 KB; 60 leaves headroom for browser variance.
+
+## Architecture
+
+Single-file IIFE, six layers:
+
+1. **Bootstrap** — URL guards, re-entry guard, transient toast.
+2. **API client** — `fetch` wrapper for the Claude.ai endpoints, with Cloudflare-challenge detection.
+3. **State store** — minimal pub-sub over a frozen state object.
+4. **Tree model** — pure functions over the `chat_messages` array (build index, walk to root, find latest, find forks, search).
+5. **UI** — Shadow-DOM modal styled with Claude's own design tokens (Anthropic Sans/Mono/Serif, clay accent, the same `--bg-*` / `--text-*` scales as `claude.ai`).
+6. **Actions** — side-effectful operations composing the layers above.
+
+`bookmarklet.js` is annotated end-to-end.
+
+## Status
+
+This is `v0.1`. The bookmarklet works in Chrome; the landing page is minimal; the Arc/Firefox/Safari stories are open. Issues and pull requests are welcome.
