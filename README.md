@@ -86,3 +86,7 @@ Single-file IIFE, six layers:
 ## Status
 
 This is `v0.1`. The bookmarklet works in Chrome; the landing page is minimal; the Arc/Firefox/Safari stories are open. Issues and pull requests are welcome.
+
+## License
+
+MIT — see [LICENSE](LICENSE).
