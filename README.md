@@ -70,6 +70,8 @@ Outputs:
 
 The build fails if the encoded URL exceeds 60 KB. Chrome's bookmarklet ceiling is reported around 64 KB; 60 leaves headroom for browser variance.
 
+If you push a change to `bookmarklet.js` (or `build.js`) without committing a rebuilt `dist/`, CI will rebuild it and commit the result on top of your push automatically — see [`.github/workflows/build-dist.yml`](.github/workflows/build-dist.yml). So `dist/` is always source-of-truth for the URL the install page hands out.
+
 ## Architecture
 
 Single-file IIFE, six layers:
