@@ -62,7 +62,7 @@ const MAX_URL_BYTES = 60 * 1024;
   const safeUrlText = url.replace(/&/g, '&amp;').replace(/</g, '&lt;');
   const installHtml = `<!doctype html>
 <meta charset="utf-8">
-<title>branchview — install</title>
+<title>superclaude — install</title>
 <style>
   body { font: 14px/1.55 -apple-system, system-ui, sans-serif;
          max-width: 680px; margin: 40px auto; padding: 0 20px; color: #222; }
@@ -88,12 +88,12 @@ const MAX_URL_BYTES = 60 * 1024;
   .meta { color: #888; font-size: 12px; margin-top: 32px; }
   .note { color: #666; font-size: 12px; }
 </style>
-<h1>branchview</h1>
+<h1>superclaude</h1>
 <p class="note">claude.ai conversation-branch visualizer — click any leaf to jump there.</p>
 
 <h2>Option A — drag to bookmarks bar</h2>
 <p>Drag this button up to your bookmarks bar:</p>
-<a class="install" href="${safeUrlHref}">branchview</a>
+<a class="install" href="${safeUrlHref}">superclaude</a>
 <p class="note">Doesn't work in every browser. Recent Chrome may strip the
 <code>javascript:</code> scheme during drag, leaving you with a broken bookmark
 that searches Google when clicked. If that happens, use Option B.</p>
@@ -102,7 +102,7 @@ that searches Google when clicked. If that happens, use Option B.</p>
 <ol>
   <li>Right-click your bookmarks bar → <b>Add page…</b> (Chrome) or
       <b>Bookmark…</b> (Safari) or equivalent.</li>
-  <li>Name it <b>branchview</b>.</li>
+  <li>Name it <b>superclaude</b>.</li>
   <li>Paste the URL below into the URL field and save.</li>
 </ol>
 <p><button id="copy">Copy URL to clipboard</button>
@@ -112,7 +112,7 @@ that searches Google when clicked. If that happens, use Option B.</p>
 <h2>Using it</h2>
 <ol>
   <li>Open any chat at <code>claude.ai/chat/&lt;id&gt;</code>.</li>
-  <li>Click the <b>branchview</b> bookmark.</li>
+  <li>Click the <b>superclaude</b> bookmark.</li>
   <li>A modal opens with the full branch tree. Click a node to preview it;
       click <b>Jump to this branch</b> to make it the displayed leaf, or
       <b>Jump to latest</b> to go to the most recent message across all

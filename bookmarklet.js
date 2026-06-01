@@ -1,4 +1,4 @@
-// branchview — claude.ai conversation branch visualizer (bookmarklet)
+// superclaude — claude.ai conversation branch visualizer (bookmarklet)
 // Runs in the claude.ai page context. See README for build/install instructions.
 (() => {
   'use strict';
@@ -16,7 +16,7 @@
   //      so later layers and DevTools probes can find them.
   // ---------------------------------------------------------------------------
 
-  const NS = '__branchview__';
+  const NS = '__superclaude__';
   const VERSION = '0.1.0';
   const CONV_UUID_RE = /^\/chat\/([0-9a-f-]{36})(?:\/|$)/i;
 
@@ -259,7 +259,7 @@
         if (!changed) return state;
         state = Object.freeze({ ...state, ...delta });
         for (const fn of listeners) {
-          try { fn(state); } catch (err) { console.error('[branchview] subscriber error:', err); }
+          try { fn(state); } catch (err) { console.error('[superclaude] subscriber error:', err); }
         }
         return state;
       },
@@ -441,7 +441,7 @@
   // delegated event listeners on every render (innerHTML wipes them).
   // ---------------------------------------------------------------------------
 
-  const HOST_ID = '__branchview_host__';
+  const HOST_ID = '__superclaude_host__';
 
   // Styles use Claude.ai's design tokens (sampled from --bg-*, --text-*,
   // --accent-brand, --font-anthropic-sans on claude.ai itself) so the modal
@@ -1168,7 +1168,7 @@
   const buildSkeleton = (modal) => {
     modal.innerHTML = `
       <header>
-        <h1><span class="title">branchview</span> <span class="sub"></span></h1>
+        <h1><span class="title">superclaude</span> <span class="sub"></span></h1>
         <button class="close-btn" data-action="close" aria-label="Close">×</button>
       </header>
       <div class="toolbar">
@@ -1198,7 +1198,7 @@
     // instead of an emoji (more consistent with Claude's restrained UI).
     // Both interpolations are safe: chat_messages.length and findBranchPoints
     // return integers, not user-controlled strings.
-    modal.querySelector('.title').textContent = conv ? conv.name : 'branchview';
+    modal.querySelector('.title').textContent = conv ? conv.name : 'superclaude';
     let sub = '';
     if (conv) {
       const idx = getIndex(conv);
@@ -1442,7 +1442,7 @@
     store.setState({ isLoading: false, error: err });
     const tag = err instanceof ApiError ? `[${err.code}]` : '';
     toast(`${label} failed — ${tag} ${err.message}`.trim(), { kind: 'error', timeoutMs: 8000 });
-    console.error('[branchview]', err);
+    console.error('[superclaude]', err);
   };
 
   // Delete any IndexedDB records (across all databases / object stores) whose
@@ -1558,7 +1558,7 @@
     },
 
     // Convenience: find the message with the max created_at and jump to it.
-    // Solves the original problem that motivated branchview: "the latest reply
+    // Solves the original problem that motivated superclaude: "the latest reply
     // is hidden somewhere in the tree and the arrow UI won't get me there".
     jumpToLatest: () => {
       const { conv } = store.getState();
