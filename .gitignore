@@ -1,0 +1,36 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (in case we add a build step later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Build output
+build/
+*.min.js
+# dist/ is intentionally committed — the minified bookmarklet is the artifact
+# users install, so checking it in lets visitors diff it against the source
+# to verify nothing was injected during minification.
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Local scratch
+scratch/
+tmp/
