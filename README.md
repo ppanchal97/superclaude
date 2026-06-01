@@ -90,3 +90,7 @@ This is `v0.1`. The bookmarklet works in Chrome; the landing page is minimal; th
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+---
+
+Built by Rick Panchal ([@ppanchal97](https://github.com/ppanchal97)).
