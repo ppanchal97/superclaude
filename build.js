@@ -414,19 +414,17 @@ ${FAVICON}
   .closing-install { margin: 32px 0 30px; }
   .closing-install .drag-hint { margin: 0 0 14px; justify-content: center; }
 
-  .demo { aspect-ratio: 4 / 3; border-radius: 28px; display: flex;
-          align-items: center; justify-content: center; position: relative;
-          overflow: hidden; }
-  .demo-beige { background: var(--beige); }
-  .demo-sage  { background: var(--sage); }
-  .demo .play { width: 68px; height: 68px; background: hsl(40 8% 14%);
-                border-radius: 18px; display: flex; align-items: center;
-                justify-content: center;
-                box-shadow: 0 12px 32px rgb(0 0 0 / 0.22); }
-  .demo .play svg { width: 24px; height: 24px; fill: white; margin-left: 4px; }
-  .demo .caption { position: absolute; bottom: 20px; left: 24px; right: 24px;
-                   font-size: 12px; letter-spacing: 0.02em;
-                   color: hsl(40 8% 28%); text-transform: uppercase; }
+  /* Demo cards hold a screen-recording. The 16:10 ratio matches the source
+     videos (3004x1876) so they fill the card with no crop or letterbox. The
+     beige/sage background shows through only while the video loads. */
+  .demo { aspect-ratio: 16 / 10; border-radius: 12px; position: relative;
+          overflow: hidden;
+          box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.5); }
+  /* Dark load background so the rounded-corner anti-aliasing blends into the
+     page instead of flashing a pale edge around the video. */
+  .demo-beige, .demo-sage { background: #0f0e0d; }
+  .demo video { position: absolute; inset: -1px; width: calc(100% + 2px);
+                height: calc(100% + 2px); object-fit: cover; display: block; }
 
   .section { padding: 100px 0; border-top: 1px solid var(--border); }
   .feature-grid { display: grid; grid-template-columns: 1fr; gap: 56px;
@@ -553,9 +551,8 @@ ${FAVICON}
             <span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>No servers, no tracking</span>
           </div>
         </div>
-        <div class="demo demo-beige" aria-label="Demo placeholder: tree view">
-          <div class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8V4z"/></svg></div>
-          <div class="caption">Demo · the tree view</div>
+        <div class="demo demo-beige">
+          <video src="./assets/tree_view.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Demo: the branch tree view"></video>
         </div>
       </div>
     </section>
@@ -584,9 +581,8 @@ ${FAVICON}
             </span>
           </div>
         </div>
-        <div class="demo demo-beige" aria-label="Demo placeholder: install and launch">
-          <div class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8V4z"/></svg></div>
-          <div class="caption">Demo · install and launch</div>
+        <div class="demo demo-beige">
+          <video src="./assets/install_and_launch.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Demo: installing and launching superclaude"></video>
         </div>
       </div>
     </section>
@@ -602,9 +598,8 @@ ${FAVICON}
             clicks. superclaude shows them all at once, and a single click on
             any node switches your conversation to that branch.</p>
         </div>
-        <div class="demo demo-sage" aria-label="Demo placeholder: jumping branches">
-          <div class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8V4z"/></svg></div>
-          <div class="caption">Demo · jumping branches</div>
+        <div class="demo demo-sage">
+          <video src="./assets/jumping_branches.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Demo: jumping between branches"></video>
         </div>
       </div>
     </section>
@@ -618,9 +613,8 @@ ${FAVICON}
             up across the whole tree, including the branches Claude's UI keeps
             hidden. Click a match and you land right on it.</p>
         </div>
-        <div class="demo demo-beige" aria-label="Demo placeholder: searching the tree">
-          <div class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8V4z"/></svg></div>
-          <div class="caption">Demo · searching the tree</div>
+        <div class="demo demo-beige">
+          <video src="./assets/search.mp4" autoplay muted loop playsinline preload="metadata" aria-label="Demo: searching across branches"></video>
         </div>
       </div>
     </section>
@@ -735,6 +729,29 @@ ${FAVICON}
         }
       }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
       for (var j = 0; j < els.length; j++) io.observe(els[j]);
+    })();
+
+    // Demo videos autoplay (muted) but pause once scrolled off-screen, so we
+    // never decode four clips at once. The 'autoplay' attribute is the no-JS
+    // fallback; this observer is the real play/pause controller on top of it.
+    (function () {
+      var vids = document.querySelectorAll('.demo video');
+      if (!vids.length) return;
+      var reduce = window.matchMedia &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) {                       // honor reduced-motion: hold a still frame
+        for (var i = 0; i < vids.length; i++) vids[i].pause();
+        return;
+      }
+      if (!('IntersectionObserver' in window)) return;  // attribute autoplay handles it
+      var vio = new IntersectionObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          var v = entries[i].target;
+          if (entries[i].isIntersecting) { var p = v.play(); if (p) p.catch(function () {}); }
+          else { v.pause(); }
+        }
+      }, { threshold: 0.25 });
+      for (var k = 0; k < vids.length; k++) vio.observe(vids[k]);
     })();
   </script>
 </body>
