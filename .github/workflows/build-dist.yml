@@ -1,14 +1,15 @@
-# Keeps dist/ in sync with source automatically.
+# Keeps build outputs (dist/ and the root landing page index.html) in sync
+# with source automatically.
 #
 # Trigger: any push to main that touches a source input (bookmarklet.js,
-# build.js, package.json, package-lock.json). dist-only and README-only
-# pushes are excluded, so the workflow never triggers itself.
+# build.js, package.json, package-lock.json). Pushes that only change build
+# outputs or docs are excluded, so the workflow never triggers itself.
 #
 # Behavior:
 #   1. Run `npm run build` on a clean checkout.
-#   2. Diff the rebuilt dist/ against the just-pushed dist/.
+#   2. Diff the rebuilt outputs against the just-pushed outputs.
 #      - In sync? No commit, no push, no noise. (The dev rebuilt locally.)
-#      - Drift? CI commits the rebuilt dist/ on top of the dev's push.
+#      - Drift? CI commits the rebuild on top of the dev's push.
 #
 # The follow-up commit includes "[skip ci]" so even if the path filter
 # ever lets it through, it won't trigger a second run.
@@ -44,15 +45,15 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Commit rebuilt dist/ if it drifted
+      - name: Commit rebuilt outputs if they drifted
         run: |
-          if git diff --quiet dist/; then
-            echo "dist/ matches source — nothing to commit."
+          if git diff --quiet dist/ index.html; then
+            echo "build outputs match source — nothing to commit."
           else
-            echo "dist/ drifted from source. Committing rebuild."
+            echo "build outputs drifted from source. Committing rebuild."
             git config user.name  "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add dist/
-            git commit -m "ci: rebuild dist/ [skip ci]"
+            git add dist/ index.html
+            git commit -m "ci: rebuild outputs [skip ci]"
             git push
           fi
