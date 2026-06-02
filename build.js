@@ -283,12 +283,290 @@ document.getElementById('copy').addEventListener('click', async () => {
 `;
   fs.writeFileSync(path.join(DIST, 'install.html'), installHtml);
 
+  // Public landing page (root index.html, served by GitHub Pages).
+  // Asymmetric two-column hero + feature section, dark Claude-inspired palette.
+  // The primary CTA is the bookmarklet itself, draggable directly to bookmarks.
+  // Video areas are deliberately empty placeholders — captions describe what
+  // belongs there so a future recording can drop in without reflowing layout.
+  const landingHtml = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>superclaude — see every branch of your Claude conversation</title>
+<meta name="description" content="A bookmarklet that visualizes the branch tree of any claude.ai conversation and lets you jump to any leaf in one click.">
+${FAVICON}
+<script>document.documentElement.classList.add('js');</script>
+<style>
+  :root {
+    --bg: #181715;
+    --text: hsl(60 14% 97%);
+    --text-2: hsl(55 9% 74%);
+    --text-3: hsl(48 5% 57%);
+    --border: hsl(53 12% 87% / 0.10);
+    --clay: hsl(14.8 63.1% 59.6%);
+    --beige: #ece2cc;
+    --sage: #d2dfd6;
+    --serif: Georgia, "Times New Roman", Times, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text);
+               font-family: var(--sans); -webkit-font-smoothing: antialiased;
+               -moz-osx-font-smoothing: grayscale; }
+  ::selection { background: var(--clay); color: var(--bg); }
+  a { color: inherit; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.92em;
+         background: hsl(53 12% 87% / 0.08); padding: 1px 6px; border-radius: 4px; }
+
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+
+  header { padding: 28px 0 8px; }
+  .nav { display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-family: var(--serif); font-style: italic; font-size: 24px;
+           letter-spacing: -0.01em; }
+  .brand .star { color: var(--clay); font-style: normal; margin-right: 2px; }
+  .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--text-2); }
+  .nav-links a { text-decoration: none; }
+  .nav-links a:hover { color: var(--text); }
+
+  .hero { padding: 72px 0 60px; }
+  .hero-grid { display: grid; grid-template-columns: 1fr; gap: 56px;
+               align-items: center; }
+  @media (min-width: 900px) {
+    .hero-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 72px; }
+  }
+  .headline { font-family: var(--serif); font-weight: 400;
+              font-size: clamp(40px, 6vw, 72px); line-height: 1.04;
+              letter-spacing: -0.025em; margin: 0 0 24px; }
+  .subhead { font-size: 18px; line-height: 1.55; color: var(--text-2);
+             margin: 0 0 36px; max-width: 520px; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; padding: 13px 24px;
+         border-radius: 999px; font-size: 15px; font-weight: 500;
+         text-decoration: none; font-family: inherit; border: 1px solid transparent;
+         cursor: pointer; transition: background-color 0.15s, border-color 0.15s; }
+  .btn-secondary { background: transparent; color: var(--text);
+                   border-color: var(--border); }
+  .btn-secondary:hover { border-color: hsl(53 12% 87% / 0.25); }
+
+  /* The install CTA is a draggable bookmark chip, not a button. Grip dots +
+     idle float + grab cursor all signal "pick me up and drag me," and the
+     sparkle + label make it preview as the bookmark it becomes on drop. */
+  .install-zone { margin-top: 4px; }
+  .drag-hint { display: inline-flex; align-items: center; gap: 7px;
+               margin: 0 0 14px 4px; font-size: 13px; color: var(--text-3);
+               letter-spacing: 0.01em; }
+  .drag-hint .arrow { display: inline-flex; fill: var(--clay);
+                      animation: nudge-up 1.8s ease-in-out infinite; }
+  @keyframes nudge-up {
+    0%, 100% { transform: translateY(1px); }
+    50%      { transform: translateY(-3px); }
+  }
+
+  .chip-float { display: inline-block; animation: float 3s ease-in-out infinite; }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+
+  .bookmarklet-chip {
+    display: inline-flex; align-items: center; gap: 11px;
+    padding: 12px 20px 12px 13px; border-radius: 13px;
+    background: var(--text); color: #1f1d1a;
+    font-size: 15.5px; font-weight: 600; letter-spacing: -0.01em;
+    text-decoration: none; cursor: grab; user-select: none;
+    box-shadow: 0 14px 34px -10px rgb(0 0 0 / 0.55),
+                0 1px 0 0 hsl(0 0% 100% / 0.55) inset;
+    transition: transform 0.18s var(--ease, ease), box-shadow 0.18s ease;
+  }
+  .bookmarklet-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 44px -10px rgb(0 0 0 / 0.6),
+                0 1px 0 0 hsl(0 0% 100% / 0.55) inset;
+  }
+  .bookmarklet-chip:active { cursor: grabbing; transform: scale(0.99); }
+  .chip-grip { display: flex; flex-shrink: 0; fill: #b9b3a6; }
+  .chip-star { display: flex; flex-shrink: 0; fill: var(--clay); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chip-float, .drag-hint .arrow { animation: none; }
+  }
+
+  .install-fallback { margin: 18px 0 0 4px; font-size: 13px; color: var(--text-3); }
+  .install-fallback a { color: var(--text-2); text-decoration: underline;
+                        text-underline-offset: 2px; }
+  .install-fallback a:hover { color: var(--text); }
+
+  .demo { aspect-ratio: 4 / 3; border-radius: 28px; display: flex;
+          align-items: center; justify-content: center; position: relative;
+          overflow: hidden; }
+  .demo-beige { background: var(--beige); }
+  .demo-sage  { background: var(--sage); }
+  .demo .play { width: 68px; height: 68px; background: hsl(40 8% 14%);
+                border-radius: 18px; display: flex; align-items: center;
+                justify-content: center;
+                box-shadow: 0 12px 32px rgb(0 0 0 / 0.22); }
+  .demo .play svg { width: 24px; height: 24px; fill: white; margin-left: 4px; }
+  .demo .caption { position: absolute; bottom: 20px; left: 24px; right: 24px;
+                   font-size: 12px; letter-spacing: 0.02em;
+                   color: hsl(40 8% 28%); text-transform: uppercase; }
+
+  .section { padding: 100px 0; border-top: 1px solid var(--border); }
+  .feature-grid { display: grid; grid-template-columns: 1fr; gap: 56px;
+                  align-items: center; }
+  @media (min-width: 900px) {
+    .feature-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 80px; }
+    .feature-grid.reverse { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); }
+    .feature-grid.reverse .text { order: 2; }
+  }
+  .section-title { font-family: var(--serif); font-weight: 400;
+                   font-size: clamp(30px, 4vw, 44px); line-height: 1.1;
+                   letter-spacing: -0.02em; margin: 0 0 22px; }
+  .section-body { font-size: 17px; line-height: 1.6; color: var(--text-2);
+                  margin: 0; max-width: 480px; }
+
+  .closing { padding: 96px 0; text-align: center; border-top: 1px solid var(--border); }
+  .closing h2 { font-family: var(--serif); font-weight: 400;
+                font-size: clamp(28px, 3.5vw, 40px); margin: 0 0 18px;
+                letter-spacing: -0.02em; }
+  .closing p { color: var(--text-2); font-size: 16px; max-width: 560px;
+               margin: 0 auto 32px; line-height: 1.6; }
+  .closing .browser-note { margin-top: 26px; font-size: 13px; color: var(--text-3); }
+
+  footer { padding: 36px 0 56px; color: var(--text-3); font-size: 13px;
+           border-top: 1px solid var(--border); }
+  .footer-row { display: flex; justify-content: space-between; align-items: center;
+                flex-wrap: wrap; gap: 16px; }
+  footer a { color: var(--text-3); text-decoration: none; }
+  footer a:hover { color: var(--text-2); }
+
+  /* Scroll-triggered reveals. The .js gate ensures no-JS visitors see content
+     immediately (otherwise .reveal would stay at opacity 0 forever). */
+  .js .reveal { opacity: 0; transform: translateY(28px);
+                transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                            transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); }
+  .js .reveal.is-visible { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .js .reveal, .js .reveal.is-visible {
+      opacity: 1; transform: none; transition: none;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <nav class="nav">
+        <div class="brand"><span class="star">✦</span>superclaude</div>
+        <div class="nav-links">
+          <a href="./dist/install.html">Install</a>
+          <a href="https://github.com/ppanchal97/superclaude">GitHub</a>
+        </div>
+      </nav>
+    </header>
+
+    <section class="hero reveal">
+      <div class="hero-grid">
+        <div>
+          <h1 class="headline">See every branch of your Claude conversation.</h1>
+          <p class="subhead">A bookmarklet that maps out every fork in any
+            claude.ai chat — and lets you jump back to any leaf in one click.</p>
+          <div class="install-zone">
+            <p class="drag-hint">
+              <span class="arrow" aria-hidden="true"><svg viewBox="0 0 16 16" width="12" height="12"><path d="M8 2.5l4.5 5H9.5v6h-3v-6H3.5z"/></svg></span>
+              Drag this up to your bookmarks bar
+            </p>
+            <span class="chip-float">
+              <a class="bookmarklet-chip" href="${safeUrlHref}" title="Drag me to your bookmarks bar">
+                <span class="chip-grip" aria-hidden="true"><svg viewBox="0 0 10 16" width="10" height="16"><circle cx="2.5" cy="3" r="1.3"/><circle cx="7.5" cy="3" r="1.3"/><circle cx="2.5" cy="8" r="1.3"/><circle cx="7.5" cy="8" r="1.3"/><circle cx="2.5" cy="13" r="1.3"/><circle cx="7.5" cy="13" r="1.3"/></svg></span>
+                <span class="chip-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 2C12.6 7.4 16.6 11.4 22 12 16.6 12.6 12.6 16.6 12 22 11.4 16.6 7.4 12.6 2 12 7.4 11.4 11.4 7.4 12 2Z"/></svg></span>
+                <span class="chip-label">superclaude</span>
+              </a>
+            </span>
+            <p class="install-fallback">Can't drag it?
+              <a href="./dist/install.html">Install it manually →</a></p>
+          </div>
+        </div>
+        <div class="demo demo-beige" aria-label="Demo placeholder: tree view">
+          <div class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8V4z"/></svg></div>
+          <div class="caption">Demo · the tree view</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
+      <div class="feature-grid reverse">
+        <div class="text">
+          <h2 class="section-title">Find the reply you remember writing.</h2>
+          <p class="section-body">Editing a message or asking Claude to retry
+            creates a new branch — but Claude's UI only shows one path at a
+            time. The reply you remember is often the latest leaf of a sibling
+            you can't see, sitting behind a string of <code>&lt; 2/3 &gt;</code>
+            clicks. superclaude shows them all at once, and a single click on
+            any node switches your conversation to that branch.</p>
+        </div>
+        <div class="demo demo-sage" aria-label="Demo placeholder: jumping branches">
+          <div class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8V4z"/></svg></div>
+          <div class="caption">Demo · jumping branches</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing reveal">
+      <h2>Open-source. Audit before you install.</h2>
+      <p>superclaude is one self-contained file. No third-party servers, no
+        telemetry. It calls only Claude.ai's own API, writes one field — the
+        current leaf UUID — and refuses to run anywhere outside
+        <code>claude.ai/chat/</code>. CI verifies the install URL on this page
+        matches a fresh build of the source you can read.</p>
+      <div class="cta-row" style="justify-content: center;">
+        <a class="btn btn-secondary" href="https://github.com/ppanchal97/superclaude#audit-before-installing">Read the audit guide</a>
+      </div>
+      <p class="browser-note">Tested in Chrome. Edge should work (same engine).
+        Arc blocks <code>javascript:</code> bookmarklets at the scheme level
+        and is not supported. Firefox and Safari are untested.</p>
+    </section>
+
+    <footer class="reveal">
+      <div class="footer-row">
+        <div>MIT · Built by <a href="https://github.com/ppanchal97">Rick Panchal</a></div>
+        <div><a href="https://github.com/ppanchal97/superclaude">github.com/ppanchal97/superclaude</a></div>
+      </div>
+    </footer>
+  </div>
+  <script>
+    // Reveal each .reveal block as it enters the viewport. One-shot —
+    // unobserve once visible so re-entering scroll doesn't re-trigger.
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        // Old browser: just show everything.
+        for (var i = 0; i < els.length; i++) els[i].classList.add('is-visible');
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          if (entries[i].isIntersecting) {
+            entries[i].target.classList.add('is-visible');
+            io.unobserve(entries[i].target);
+          }
+        }
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+      for (var j = 0; j < els.length; j++) io.observe(els[j]);
+    })();
+  </script>
+</body>
+</html>
+`;
+  fs.writeFileSync(path.join(__dirname, 'index.html'), landingHtml);
+
   const sourceBytes = Buffer.byteLength(src, 'utf8');
   const minBytes = Buffer.byteLength(result.code, 'utf8');
   console.log(`source:    ${sourceBytes.toLocaleString()} bytes`);
   console.log(`minified:  ${minBytes.toLocaleString()} bytes (${(minBytes / sourceBytes * 100).toFixed(1)}% of source)`);
   console.log(`url:       ${url.length.toLocaleString()} bytes (${(url.length / MAX_URL_BYTES * 100).toFixed(1)}% of ${MAX_URL_BYTES.toLocaleString()})`);
-  console.log(`wrote:     dist/bookmarklet.url, dist/install.html`);
+  console.log(`wrote:     dist/bookmarklet.url, dist/install.html, index.html`);
 })().catch((err) => {
   console.error('build failed:', err.message);
   process.exit(1);
