@@ -293,8 +293,8 @@ document.getElementById('copy').addEventListener('click', async () => {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>superclaude — see every branch of your Claude conversation</title>
-<meta name="description" content="A bookmarklet that visualizes the branch tree of any claude.ai conversation and lets you jump to any leaf in one click.">
+<title>superclaude · visualize and search your Claude conversations</title>
+<meta name="description" content="A free, fully local bookmarklet that visualizes the branch tree of any claude.ai conversation, letting you search across every fork and jump to any leaf in one click.">
 ${FAVICON}
 <script>document.documentElement.classList.add('js');</script>
 <style>
@@ -326,8 +326,11 @@ ${FAVICON}
   .brand { font-family: var(--serif); font-style: italic; font-size: 24px;
            letter-spacing: -0.01em; }
   .brand .star { color: var(--clay); font-style: normal; margin-right: 2px; }
-  .nav-links { display: flex; gap: 28px; font-size: 14px; color: var(--text-2); }
-  .nav-links a { text-decoration: none; }
+  .nav-links { display: flex; gap: 24px; font-size: 14px; color: var(--text-2); }
+  .nav-links a { display: inline-flex; align-items: center; gap: 7px;
+                 text-decoration: none; }
+  .nav-links a svg { width: 15px; height: 15px; fill: currentColor;
+                     flex-shrink: 0; }
   .nav-links a:hover { color: var(--text); }
 
   .hero { padding: 72px 0 60px; }
@@ -355,8 +358,8 @@ ${FAVICON}
      sparkle + label make it preview as the bookmark it becomes on drop. */
   .install-zone { margin-top: 4px; }
   .drag-hint { display: inline-flex; align-items: center; gap: 7px;
-               margin: 0 0 14px 4px; font-size: 13px; color: var(--text-3);
-               letter-spacing: 0.01em; }
+               margin: 0 0 14px 4px; padding-right: 18px; font-size: 13px;
+               color: var(--text-3); letter-spacing: 0.01em; }
   .drag-hint .arrow { display: inline-flex; fill: var(--clay);
                       animation: nudge-up 1.8s ease-in-out infinite; }
   @keyframes nudge-up {
@@ -398,6 +401,19 @@ ${FAVICON}
                         text-underline-offset: 2px; }
   .install-fallback a:hover { color: var(--text); }
 
+  /* Trust signals as their own pill row, so "free / local / private" reads at a
+     glance instead of hiding in the tail of the subhead sentence. */
+  .trust-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 26px 0 0 4px; }
+  .pill { display: inline-flex; align-items: center; gap: 6px;
+          padding: 5px 12px 5px 10px; border-radius: 999px;
+          border: 1px solid var(--border); font-size: 12.5px;
+          color: var(--text-2); letter-spacing: 0.01em; }
+  .pill svg { width: 13px; height: 13px; fill: var(--clay); flex-shrink: 0; }
+
+  /* Install chip repeated in the closing block, centered. */
+  .closing-install { margin: 32px 0 30px; }
+  .closing-install .drag-hint { margin: 0 0 14px; justify-content: center; }
+
   .demo { aspect-ratio: 4 / 3; border-radius: 28px; display: flex;
           align-items: center; justify-content: center; position: relative;
           overflow: hidden; }
@@ -426,10 +442,53 @@ ${FAVICON}
   .section-body { font-size: 17px; line-height: 1.6; color: var(--text-2);
                   margin: 0; max-width: 480px; }
 
+  /* Numbered setup steps with clay badges, matching the install page. */
+  .setup-steps { list-style: none; counter-reset: step; margin: 0; padding: 0;
+                 max-width: 480px; }
+  .setup-steps li { position: relative; padding-left: 42px; margin: 0 0 16px;
+                    color: var(--text-2); font-size: 16px; line-height: 1.55; }
+  .setup-steps li:last-child { margin-bottom: 0; }
+  .setup-steps li::before { counter-increment: step; content: counter(step);
+    position: absolute; left: 0; top: -1px; width: 27px; height: 27px;
+    border-radius: 50%; background: var(--clay); color: #1f1d1a;
+    font-size: 13px; font-weight: 700; display: flex; align-items: center;
+    justify-content: center; }
+  .setup-install { margin-top: 26px; }
+
+  /* FAQ — collapsible disclosures. Plain-language answers aimed at users who
+     may never have used a bookmarklet before. */
+  .faq-section .section-title { text-align: center; margin-bottom: 4px; }
+  .faq-list { max-width: 720px; margin: 32px auto 0; }
+  .faq { border-bottom: 1px solid var(--border); }
+  .faq:first-child { border-top: 1px solid var(--border); }
+  .faq > summary { cursor: pointer; list-style: none; user-select: none;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 20px; padding: 22px 6px; font-size: 17px; color: var(--text);
+    font-weight: 500; transition: color 0.15s; }
+  .faq > summary::-webkit-details-marker { display: none; }
+  .faq > summary:hover { color: var(--clay); }
+  .faq-icon { flex-shrink: 0; position: relative; width: 16px; height: 16px; }
+  .faq-icon::before, .faq-icon::after { content: ""; position: absolute;
+    top: 50%; left: 50%; background: var(--clay); border-radius: 2px;
+    transition: transform 0.2s ease; }
+  .faq-icon::before { width: 16px; height: 2px; transform: translate(-50%, -50%); }
+  .faq-icon::after  { width: 2px; height: 16px; transform: translate(-50%, -50%); }
+  .faq[open] > summary .faq-icon::after { transform: translate(-50%, -50%) scaleY(0); }
+  .faq-answer { padding: 0 6px 24px; margin: 0; color: var(--text-2);
+    font-size: 15.5px; line-height: 1.65; max-width: 660px; }
+  .faq-answer a { color: var(--text-2); text-decoration: underline;
+    text-underline-offset: 2px; }
+  .faq-answer a:hover { color: var(--text); }
+  .faq-answer code { font-size: 0.9em; }
+
   .closing { padding: 96px 0; text-align: center; border-top: 1px solid var(--border); }
   .closing h2 { font-family: var(--serif); font-weight: 400;
                 font-size: clamp(28px, 3.5vw, 40px); margin: 0 0 18px;
                 letter-spacing: -0.02em; }
+  .closing h2 a { color: var(--clay); text-decoration: none;
+                  border-bottom: 1px solid hsl(14.8 63.1% 59.6% / 0.4);
+                  transition: border-color 0.15s; }
+  .closing h2 a:hover { border-bottom-color: var(--clay); }
   .closing p { color: var(--text-2); font-size: 16px; max-width: 560px;
                margin: 0 auto 32px; line-height: 1.6; }
   .closing .browser-note { margin-top: 26px; font-size: 13px; color: var(--text-3); }
@@ -460,8 +519,8 @@ ${FAVICON}
       <nav class="nav">
         <div class="brand"><span class="star">✦</span>superclaude</div>
         <div class="nav-links">
-          <a href="./dist/install.html">Install</a>
-          <a href="https://github.com/ppanchal97/superclaude">GitHub</a>
+          <a href="./dist/install.html"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a1 1 0 0 1 1 1v9.59l3.3-3.3a1 1 0 0 1 1.4 1.42l-5 5a1 1 0 0 1-1.4 0l-5-5a1 1 0 0 1 1.4-1.42l3.3 3.3V4a1 1 0 0 1 1-1ZM5 19a1 1 0 0 1 0-2h14a1 1 0 0 1 0 2H5Z"/></svg>Install</a>
+          <a href="https://github.com/ppanchal97/superclaude"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5A10.5 10.5 0 0 0 8.68 22a.83.83 0 0 0 .17-.58v-2.03c-2.92.63-3.54-1.41-3.54-1.41a2.78 2.78 0 0 0-1.17-1.54c-.95-.65.08-.64.08-.64a2.2 2.2 0 0 1 1.61 1.08 2.24 2.24 0 0 0 3.05.87 2.24 2.24 0 0 1 .67-1.41c-2.33-.27-4.78-1.17-4.78-5.18a4.05 4.05 0 0 1 1.08-2.81 3.77 3.77 0 0 1 .1-2.77s.88-.28 2.88 1.07a9.92 9.92 0 0 1 5.24 0c2-1.35 2.88-1.07 2.88-1.07a3.77 3.77 0 0 1 .1 2.77 4.05 4.05 0 0 1 1.08 2.81c0 4.02-2.45 4.9-4.79 5.16a2.5 2.5 0 0 1 .72 1.95v2.89a.83.83 0 0 0 .17.58A10.5 10.5 0 0 0 12 1.5Z"/></svg>GitHub</a>
         </div>
       </nav>
     </header>
@@ -469,9 +528,10 @@ ${FAVICON}
     <section class="hero reveal">
       <div class="hero-grid">
         <div>
-          <h1 class="headline">See every branch of your Claude conversation.</h1>
+          <h1 class="headline">Visualize and search through your Claude conversations.</h1>
           <p class="subhead">A bookmarklet that maps out every fork in any
-            claude.ai chat — and lets you jump back to any leaf in one click.</p>
+            claude.ai chat, letting you search and jump between any leaf in one
+            click.</p>
           <div class="install-zone">
             <p class="drag-hint">
               <span class="arrow" aria-hidden="true"><svg viewBox="0 0 16 16" width="12" height="12"><path d="M8 2.5l4.5 5H9.5v6h-3v-6H3.5z"/></svg></span>
@@ -487,6 +547,11 @@ ${FAVICON}
             <p class="install-fallback">Can't drag it?
               <a href="./dist/install.html">Install it manually →</a></p>
           </div>
+          <div class="trust-row">
+            <span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>100% free</span>
+            <span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>Runs locally in your browser</span>
+            <span class="pill"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>No servers, no tracking</span>
+          </div>
         </div>
         <div class="demo demo-beige" aria-label="Demo placeholder: tree view">
           <div class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8V4z"/></svg></div>
@@ -496,11 +561,42 @@ ${FAVICON}
     </section>
 
     <section class="section reveal">
+      <div class="feature-grid">
+        <div class="text">
+          <h2 class="section-title">Set up in seconds.</h2>
+          <ol class="setup-steps">
+            <li>Drag the <b>superclaude</b> button to your bookmarks bar.</li>
+            <li>Open any conversation at <code>claude.ai/chat/…</code>.</li>
+            <li>Click the bookmark. The full branch tree opens instantly,
+              centered on where you are right now.</li>
+          </ol>
+          <div class="install-zone setup-install">
+            <p class="drag-hint">
+              <span class="arrow" aria-hidden="true"><svg viewBox="0 0 16 16" width="12" height="12"><path d="M8 2.5l4.5 5H9.5v6h-3v-6H3.5z"/></svg></span>
+              Drag this up to your bookmarks bar
+            </p>
+            <span class="chip-float">
+              <a class="bookmarklet-chip" href="${safeUrlHref}" title="Drag me to your bookmarks bar">
+                <span class="chip-grip" aria-hidden="true"><svg viewBox="0 0 10 16" width="10" height="16"><circle cx="2.5" cy="3" r="1.3"/><circle cx="7.5" cy="3" r="1.3"/><circle cx="2.5" cy="8" r="1.3"/><circle cx="7.5" cy="8" r="1.3"/><circle cx="2.5" cy="13" r="1.3"/><circle cx="7.5" cy="13" r="1.3"/></svg></span>
+                <span class="chip-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 2C12.6 7.4 16.6 11.4 22 12 16.6 12.6 12.6 16.6 12 22 11.4 16.6 7.4 12.6 2 12 7.4 11.4 11.4 7.4 12 2Z"/></svg></span>
+                <span class="chip-label">superclaude</span>
+              </a>
+            </span>
+          </div>
+        </div>
+        <div class="demo demo-beige" aria-label="Demo placeholder: install and launch">
+          <div class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8V4z"/></svg></div>
+          <div class="caption">Demo · install and launch</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reveal">
       <div class="feature-grid reverse">
         <div class="text">
           <h2 class="section-title">Find the reply you remember writing.</h2>
           <p class="section-body">Editing a message or asking Claude to retry
-            creates a new branch — but Claude's UI only shows one path at a
+            creates a new branch, but Claude's UI only shows one path at a
             time. The reply you remember is often the latest leaf of a sibling
             you can't see, sitting behind a string of <code>&lt; 2/3 &gt;</code>
             clicks. superclaude shows them all at once, and a single click on
@@ -513,13 +609,98 @@ ${FAVICON}
       </div>
     </section>
 
+    <section class="section reveal">
+      <div class="feature-grid">
+        <div class="text">
+          <h2 class="section-title">Search across every branch.</h2>
+          <p class="section-body">Remember a phrase but not which fork it lived
+            in? Type it into superclaude and every node that mentions it lights
+            up across the whole tree, including the branches Claude's UI keeps
+            hidden. Click a match and you land right on it.</p>
+        </div>
+        <div class="demo demo-beige" aria-label="Demo placeholder: searching the tree">
+          <div class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4l14 8-14 8V4z"/></svg></div>
+          <div class="caption">Demo · searching the tree</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section faq-section reveal">
+      <h2 class="section-title">Frequently asked questions</h2>
+      <div class="faq-list">
+        <details class="faq">
+          <summary><span>What's a bookmarklet? Is this a browser extension?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+          <p class="faq-answer">Neither an extension nor anything from an app
+            store. A bookmarklet is an ordinary browser bookmark whose address
+            is a tiny piece of code instead of a web address. When you click it,
+            that code runs on the page you're already looking at. superclaude is
+            one such bookmark: it's free, it uses your normal Claude.ai login (no
+            separate account or payment), and you can drag it to the trash like
+            any other bookmark whenever you're done.</p>
+        </details>
+        <details class="faq">
+          <summary><span>Is it safe? What can it actually touch?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+          <p class="faq-answer">It reads the conversation you're viewing to draw
+            the tree, and writes exactly one thing (which branch is currently
+            shown), and only when you click <b>Jump</b>. It can't send messages,
+            change your account settings, or read your other conversations. It
+            runs entirely in your browser through Claude.ai's own interface, so
+            nothing is sent to any third-party server, and there's no telemetry
+            or tracking. The complete source is on
+            <a href="https://github.com/ppanchal97/superclaude">GitHub</a>, and
+            the install link is verified by CI to match it.</p>
+        </details>
+        <details class="faq">
+          <summary><span>How do I install it?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+          <p class="faq-answer">Drag the <b>superclaude</b> button up to your
+            bookmarks bar, the row of bookmarks beneath the address bar. (Don't
+            see it? Press <code>Cmd/Ctrl+Shift+B</code> to show it.) That's the
+            whole install. If your browser blocks dragging a bookmarklet, which
+            recent Chrome sometimes does, the
+            <a href="./dist/install.html">install page</a> has a copy-and-paste
+            fallback that always works.</p>
+        </details>
+        <details class="faq">
+          <summary><span>How do I use it once it's on my bookmarks bar?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+          <p class="faq-answer">Open any conversation at
+            <code>claude.ai/chat/…</code> and click the <b>superclaude</b>
+            bookmark. A window opens with the conversation's full branch tree,
+            centered on where you are now. Click any node to preview that
+            message, then <b>Jump to this branch</b> to switch your conversation
+            there, or <b>Jump to latest</b> to leap to the newest message across
+            every branch.</p>
+        </details>
+        <details class="faq">
+          <summary><span>Which browsers does it work in?</span><span class="faq-icon" aria-hidden="true"></span></summary>
+          <p class="faq-answer">It's tested end-to-end in <b>Chrome</b>, and
+            <b>Edge</b> should behave the same (same engine). <b>Arc</b> blocks
+            <code>javascript:</code> bookmarklets at the browser level, so it
+            won't run there, and no bookmarklet will. <b>Firefox</b> and
+            <b>Safari</b> are untested for now.</p>
+        </details>
+      </div>
+    </section>
+
     <section class="closing reveal">
-      <h2>Open-source. Audit before you install.</h2>
+      <h2>Open-source. Code on <a href="https://github.com/ppanchal97/superclaude">GitHub</a>.</h2>
       <p>superclaude is one self-contained file. No third-party servers, no
-        telemetry. It calls only Claude.ai's own API, writes one field — the
-        current leaf UUID — and refuses to run anywhere outside
+        telemetry. It calls only Claude.ai's own API, writes one field (the
+        current leaf UUID), and refuses to run anywhere outside
         <code>claude.ai/chat/</code>. CI verifies the install URL on this page
         matches a fresh build of the source you can read.</p>
+      <div class="install-zone closing-install">
+        <p class="drag-hint">
+          <span class="arrow" aria-hidden="true"><svg viewBox="0 0 16 16" width="12" height="12"><path d="M8 2.5l4.5 5H9.5v6h-3v-6H3.5z"/></svg></span>
+          Drag this up to your bookmarks bar
+        </p>
+        <span class="chip-float">
+          <a class="bookmarklet-chip" href="${safeUrlHref}" title="Drag me to your bookmarks bar">
+            <span class="chip-grip" aria-hidden="true"><svg viewBox="0 0 10 16" width="10" height="16"><circle cx="2.5" cy="3" r="1.3"/><circle cx="7.5" cy="3" r="1.3"/><circle cx="2.5" cy="8" r="1.3"/><circle cx="7.5" cy="8" r="1.3"/><circle cx="2.5" cy="13" r="1.3"/><circle cx="7.5" cy="13" r="1.3"/></svg></span>
+            <span class="chip-star" aria-hidden="true"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 2C12.6 7.4 16.6 11.4 22 12 16.6 12.6 12.6 16.6 12 22 11.4 16.6 7.4 12.6 2 12 7.4 11.4 11.4 7.4 12 2Z"/></svg></span>
+            <span class="chip-label">superclaude</span>
+          </a>
+        </span>
+      </div>
       <div class="cta-row" style="justify-content: center;">
         <a class="btn btn-secondary" href="https://github.com/ppanchal97/superclaude#audit-before-installing">Read the audit guide</a>
       </div>
