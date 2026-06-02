@@ -1,0 +1,88 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  :root {
+    --bg: #181715;
+    --text: hsl(60 14% 97%);
+    --text-2: hsl(55 9% 74%);
+    --text-3: hsl(48 5% 57%);
+    --border: hsl(53 12% 87% / 0.12);
+    --clay: hsl(14.8 63.1% 59.6%);
+    --serif: Georgia, "Times New Roman", Times, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  }
+  body {
+    background:
+      radial-gradient(1100px 700px at 88% -10%, hsl(14.8 63.1% 59.6% / 0.16), transparent 60%),
+      var(--bg);
+    color: var(--text); font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 70px 74px;
+  }
+  .brand { font-family: var(--serif); font-style: italic; font-size: 30px;
+           letter-spacing: -0.01em; color: var(--text); }
+  .brand .star { color: var(--clay); font-style: normal; margin-right: 4px; }
+
+  .mid { display: flex; align-items: center; gap: 40px; }
+  .copy { flex: 1; min-width: 0; }
+  .headline { font-family: var(--serif); font-weight: 400; font-size: 74px;
+              line-height: 1.04; letter-spacing: -0.022em; color: var(--text);
+              max-width: 760px; }
+  .headline .accent { color: var(--clay); }
+  .subhead { margin-top: 24px; font-size: 25px; line-height: 1.45;
+             color: var(--text-2); max-width: 660px; }
+
+  .tree { flex-shrink: 0; }
+
+  .footer { display: flex; align-items: center; gap: 14px; }
+  .pill { display: inline-flex; align-items: center; gap: 9px;
+          padding: 9px 18px; border-radius: 999px; border: 1px solid var(--border);
+          font-size: 19px; color: var(--text-2); }
+  .pill .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--clay); }
+  .url { margin-left: auto; font-size: 22px; color: var(--text-3);
+         font-family: var(--serif); font-style: italic; }
+</style>
+<body>
+  <div class="brand"><span class="star">✦</span>superclaude</div>
+
+  <div class="mid">
+    <div class="copy">
+      <div class="headline">Visualize and <span class="accent">search</span> your Claude conversations.</div>
+      <div class="subhead">A free, local bookmarklet that maps every branch of a claude.ai chat, so you can jump to any leaf in one click.</div>
+    </div>
+    <svg class="tree" width="280" height="300" viewBox="0 0 280 300" fill="none">
+      <!-- edges -->
+      <g stroke="hsl(53 12% 87% / 0.28)" stroke-width="2.5">
+        <path d="M48 150 C110 150 110 60 172 60"/>
+        <path d="M48 150 C110 150 110 150 172 150"/>
+        <path d="M48 150 C110 150 110 240 172 240"/>
+        <path d="M172 60 C220 60 220 30 250 30"/>
+        <path d="M172 60 C220 60 220 90 250 90"/>
+        <path d="M172 240 C220 240 220 270 250 270"/>
+      </g>
+      <!-- nodes -->
+      <g>
+        <circle cx="48"  cy="150" r="13" fill="hsl(60 14% 97%)"/>
+        <circle cx="172" cy="60"  r="11" fill="hsl(55 9% 74%)"/>
+        <circle cx="172" cy="150" r="11" fill="hsl(55 9% 74%)"/>
+        <circle cx="172" cy="240" r="11" fill="hsl(55 9% 74%)"/>
+        <circle cx="250" cy="30"  r="9"  fill="hsl(48 5% 57%)"/>
+        <!-- highlighted current leaf -->
+        <circle cx="250" cy="90"  r="13" fill="hsl(14.8 63.1% 59.6%)"/>
+        <circle cx="250" cy="90"  r="22" fill="none" stroke="hsl(14.8 63.1% 59.6% / 0.45)" stroke-width="2.5"/>
+        <circle cx="250" cy="270" r="9"  fill="hsl(48 5% 57%)"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="footer">
+    <span class="pill"><span class="dot"></span>100% free</span>
+    <span class="pill"><span class="dot"></span>Runs locally</span>
+    <span class="pill"><span class="dot"></span>No tracking</span>
+    <span class="url">superclau.de</span>
+  </div>
+</body>
+</html>

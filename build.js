@@ -300,9 +300,14 @@ document.getElementById('copy').addEventListener('click', async () => {
 <meta property="og:url" content="https://superclau.de/">
 <meta property="og:title" content="superclaude · visualize and search your Claude conversations">
 <meta property="og:description" content="A free, fully local bookmarklet that maps every branch of a claude.ai conversation, so you can search across every fork and jump to any leaf in one click.">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://superclau.de/assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="superclaude — visualize and search your Claude conversations">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="superclaude · visualize and search your Claude conversations">
 <meta name="twitter:description" content="A free, fully local bookmarklet that maps every branch of a claude.ai conversation, so you can search across every fork and jump to any leaf in one click.">
+<meta name="twitter:image" content="https://superclau.de/assets/og.png">
 ${FAVICON}
 <script>document.documentElement.classList.add('js');</script>
 <style>
