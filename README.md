@@ -6,7 +6,7 @@ Claude conversations are trees. Every time you edit a message or ask Claude to r
 
 ## Install
 
-1. Open the [install page](https://ppanchal97.github.io/superclaude/).
+1. Open the [landing page](https://superclau.de/) (or the [install page](https://superclau.de/dist/install.html)).
 2. Drag the **superclaude** button onto your bookmarks bar.
 
 If Chrome strips the `javascript:` scheme during drag (it sometimes does on recent versions), the install page has a manual fallback: copy the URL it shows you and paste it into the URL field of a new bookmark you create by hand.

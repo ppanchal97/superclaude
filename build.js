@@ -295,6 +295,14 @@ document.getElementById('copy').addEventListener('click', async () => {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>superclaude · visualize and search your Claude conversations</title>
 <meta name="description" content="A free, fully local bookmarklet that visualizes the branch tree of any claude.ai conversation, letting you search across every fork and jump to any leaf in one click.">
+<link rel="canonical" href="https://superclau.de/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://superclau.de/">
+<meta property="og:title" content="superclaude · visualize and search your Claude conversations">
+<meta property="og:description" content="A free, fully local bookmarklet that maps every branch of a claude.ai conversation, so you can search across every fork and jump to any leaf in one click.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="superclaude · visualize and search your Claude conversations">
+<meta name="twitter:description" content="A free, fully local bookmarklet that maps every branch of a claude.ai conversation, so you can search across every fork and jump to any leaf in one click.">
 ${FAVICON}
 <script>document.documentElement.classList.add('js');</script>
 <style>
