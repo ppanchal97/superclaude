@@ -71,13 +71,13 @@
   // URL guards. Fail loudly with a toast so the user knows why nothing opened.
   // -------------------------------------------------------------------------
   if (location.hostname !== 'claude.ai') {
-    toast('Open claude.ai first, then click the bookmark.', { kind: 'error' });
+    toast('superclaude only runs inside a Claude.ai chat. Open a conversation at claude.ai/chat/… and click the bookmark there.', { kind: 'error' });
     return;
   }
 
   const match = location.pathname.match(CONV_UUID_RE);
   if (!match) {
-    toast('Open a Claude.ai conversation first (URL should be /chat/<id>).', { kind: 'error' });
+    toast('You\'re on Claude.ai, but not in a conversation. Open a chat (the URL should look like claude.ai/chat/…) and click the bookmark again.', { kind: 'error' });
     return;
   }
 
